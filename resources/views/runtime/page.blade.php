@@ -33,6 +33,7 @@
                     'component' => $component,
                     'data' => $data,
                     'formFields' => $formFields,
+                    'record' => $record,
                     'app' => $app,
                     'version' => $version,
                 ])

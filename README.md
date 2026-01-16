@@ -4,9 +4,10 @@ Low-code platform for building OutSystems-like apps using Laravel, Livewire, and
 
 ## Current status
 
-- Dashboard and per-app studio for versions, entities, pages, data sources, actions, workflows, roles, and records.
-- Metadata model with export/import support.
-- Runtime renderer for text, table, and form components.
+- App studio covering versions, entities, pages, components, data sources, actions, workflows, roles, records, and deployments.
+- Metadata import/export including entity permissions and webhooks.
+- Runtime renderer for text, table, form, chart, KPI, kanban, timeline, file upload, and record detail components.
+- Data sources support entity, static, join, and REST connectors with filters, sort, and caching.
 
 ## Local setup (no Node)
 

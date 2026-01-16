@@ -30,4 +30,9 @@ class AppEntity extends Model
     {
         return $this->hasMany(AppRecord::class);
     }
+
+    public function permissions(): HasMany
+    {
+        return $this->hasMany(AppEntityPermission::class, 'app_entity_id');
+    }
 }

@@ -18,7 +18,7 @@ class AppVersionCloner
             ]);
 
             $entityMap = [];
-            foreach ($source->entities()->with('fields')->get() as $entity) {
+            foreach ($source->entities()->with(['fields', 'permissions'])->get() as $entity) {
                 $newEntity = $target->entities()->create([
                     'name' => $entity->name,
                     'slug' => $entity->slug,
@@ -38,6 +38,16 @@ class AppVersionCloner
                         'default_value' => $field->default_value,
                         'settings' => $field->settings,
                         'sort_order' => $field->sort_order,
+                    ]);
+                }
+
+                foreach ($entity->permissions as $permission) {
+                    $newEntity->permissions()->create([
+                        'app_role_id' => $permission->app_role_id,
+                        'can_read' => $permission->can_read,
+                        'can_write' => $permission->can_write,
+                        'can_delete' => $permission->can_delete,
+                        'access_scope' => $permission->access_scope,
                     ]);
                 }
             }

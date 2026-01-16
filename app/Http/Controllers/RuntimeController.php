@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\AppAction;
+use App\Models\AppAuditLog;
 use App\Models\AppDefinition;
+use App\Models\AppMetric;
 use App\Services\ActionRunner;
 use App\Services\RuntimeRenderer;
 use Illuminate\Http\Request;
@@ -34,7 +36,36 @@ class RuntimeController extends Controller
             abort(403, 'Access denied.');
         }
 
-        $components = $renderer->build($pageModel);
+        $context = [
+            'role' => $role,
+            'user_id' => $request->query('user_id'),
+            'record_id' => $request->query('record_id'),
+        ];
+
+        $components = $renderer->build($pageModel, $context);
+
+        AppMetric::create([
+            'app_id' => $app->id,
+            'app_version_id' => $version->id,
+            'app_page_id' => $pageModel->id,
+            'event_type' => 'page_view',
+            'metadata' => [
+                'role' => $role,
+                'path' => $request->path(),
+            ],
+        ]);
+
+        AppAuditLog::create([
+            'app_id' => $app->id,
+            'app_version_id' => $version->id,
+            'app_page_id' => $pageModel->id,
+            'event' => 'page.viewed',
+            'actor_role' => $role,
+            'ip_address' => $request->ip(),
+            'metadata' => [
+                'path' => $request->path(),
+            ],
+        ]);
 
         return view('runtime.page', [
             'app' => $app,
@@ -52,7 +83,14 @@ class RuntimeController extends Controller
         }
 
         $payload = $request->except(['_token']);
-        $result = $runner->run($action, $payload);
+        $files = $request->allFiles();
+        $context = [
+            'role' => $request->query('role'),
+            'actor_id' => $request->user()?->id,
+            'ip' => $request->ip(),
+        ];
+
+        $result = $runner->run($action, $payload, $files, $context);
 
         return back()->with('action_result', $result);
     }

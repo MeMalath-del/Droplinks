@@ -26,6 +26,21 @@ class AppDefinition extends Model
         return $this->hasMany(AppRole::class, 'app_id');
     }
 
+    public function webhooks(): HasMany
+    {
+        return $this->hasMany(AppWebhook::class, 'app_id');
+    }
+
+    public function metrics(): HasMany
+    {
+        return $this->hasMany(AppMetric::class, 'app_id');
+    }
+
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(AppAuditLog::class, 'app_id');
+    }
+
     public function latestVersion(): ?AppVersion
     {
         return $this->versions()->latest('created_at')->first();

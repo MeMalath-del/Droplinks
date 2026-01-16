@@ -15,6 +15,9 @@ class AppMetadataImporter
             $roles = Arr::get($payload, 'roles', []);
             $roleMap = $this->syncRoles($app, $roles);
 
+            $webhooks = Arr::get($payload, 'webhooks', []);
+            $this->syncWebhooks($app, $webhooks);
+
             $versionPayload = Arr::get($payload, 'versions.0');
             if (! $versionPayload) {
                 throw new \RuntimeException('No version payload found.');
@@ -47,6 +50,21 @@ class AppMetadataImporter
                         'default_value' => $fieldData['default_value'] ?? null,
                         'settings' => $fieldData['settings'] ?? null,
                         'sort_order' => $fieldData['sort_order'] ?? 0,
+                    ]);
+                }
+
+                foreach ($entityData['permissions'] ?? [] as $permissionData) {
+                    $roleSlug = $permissionData['role'] ?? null;
+                    if (! $roleSlug || ! isset($roleMap[$roleSlug])) {
+                        continue;
+                    }
+
+                    $entity->permissions()->create([
+                        'app_role_id' => $roleMap[$roleSlug],
+                        'can_read' => $permissionData['can_read'] ?? true,
+                        'can_write' => $permissionData['can_write'] ?? true,
+                        'can_delete' => $permissionData['can_delete'] ?? false,
+                        'access_scope' => $permissionData['access_scope'] ?? 'all',
                     ]);
                 }
             }
@@ -150,5 +168,25 @@ class AppMetadataImporter
         }
 
         return $roleMap;
+    }
+
+    protected function syncWebhooks(AppDefinition $app, array $webhooks): void
+    {
+        foreach ($webhooks as $webhookData) {
+            $url = $webhookData['url'] ?? null;
+            $event = $webhookData['event'] ?? null;
+            if (! $url || ! $event) {
+                continue;
+            }
+
+            $app->webhooks()->updateOrCreate(
+                ['event' => $event, 'url' => $url],
+                [
+                    'secret' => $webhookData['secret'] ?? null,
+                    'headers' => $webhookData['headers'] ?? null,
+                    'is_active' => $webhookData['is_active'] ?? true,
+                ]
+            );
+        }
     }
 }

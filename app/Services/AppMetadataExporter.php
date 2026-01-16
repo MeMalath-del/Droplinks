@@ -13,9 +13,20 @@ class AppMetadataExporter
             return Arr::only($role->toArray(), ['name', 'slug', 'description']);
         })->values();
 
+        $webhooks = $app->webhooks()->get()->map(function ($webhook) {
+            return [
+                'event' => $webhook->event,
+                'url' => $webhook->url,
+                'secret' => $webhook->secret,
+                'headers' => $webhook->headers,
+                'is_active' => $webhook->is_active,
+            ];
+        })->values();
+
         $versions = $app->versions()
             ->with([
                 'entities.fields',
+                'entities.permissions.role',
                 'pages.components.dataSource',
                 'pages.components.action',
                 'pages.roles',
@@ -46,6 +57,15 @@ class AppMetadataExporter
                                     'default_value' => $field->default_value,
                                     'settings' => $field->settings,
                                     'sort_order' => $field->sort_order,
+                                ];
+                            })->values(),
+                            'permissions' => $entity->permissions->map(function ($permission) {
+                                return [
+                                    'role' => $permission->role?->slug,
+                                    'can_read' => $permission->can_read,
+                                    'can_write' => $permission->can_write,
+                                    'can_delete' => $permission->can_delete,
+                                    'access_scope' => $permission->access_scope,
                                 ];
                             })->values(),
                         ];
@@ -98,6 +118,7 @@ class AppMetadataExporter
         return [
             'app' => Arr::only($app->toArray(), ['name', 'slug', 'description', 'status']),
             'roles' => $roles,
+            'webhooks' => $webhooks,
             'versions' => $versions,
         ];
     }

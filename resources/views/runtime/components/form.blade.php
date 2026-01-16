@@ -1,12 +1,20 @@
 <section class="builder-card">
     <h2>{{ $component->name ?: 'Form' }}</h2>
 
+    @php
+        $query = request()->only(['role', 'user_id']);
+        $actionUrl = route('runtime.action', ['app' => $app->slug, 'action' => $component->action?->id]);
+        if ($query) {
+            $actionUrl .= '?'.http_build_query($query);
+        }
+    @endphp
+
     @if(! $component->action)
         <p class="hint">No action assigned to this form.</p>
     @elseif($component->action->action_type !== 'create_record')
         <p class="hint">This form expects a create_record action.</p>
     @else
-        <form method="POST" action="{{ route('runtime.action', ['app' => $app->slug, 'action' => $component->action->id]) }}">
+        <form method="POST" action="{{ $actionUrl }}">
             @csrf
             @if($formFields && $formFields->isNotEmpty())
                 @foreach($formFields as $field)

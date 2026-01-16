@@ -51,6 +51,16 @@ class AppVersion extends Model
         return $this->hasMany(AppWorkflow::class);
     }
 
+    public function deployments(): HasMany
+    {
+        return $this->hasMany(AppDeployment::class, 'app_version_id');
+    }
+
+    public function files(): HasMany
+    {
+        return $this->hasMany(AppFile::class, 'app_version_id');
+    }
+
     public function publish(): void
     {
         $this->app->versions()
