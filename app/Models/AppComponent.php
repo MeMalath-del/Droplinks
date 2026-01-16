@@ -9,6 +9,8 @@ class AppComponent extends Model
 {
     protected $fillable = [
         'app_page_id',
+        'app_datasource_id',
+        'app_action_id',
         'component_type',
         'name',
         'props',
@@ -22,5 +24,15 @@ class AppComponent extends Model
     public function page(): BelongsTo
     {
         return $this->belongsTo(AppPage::class, 'app_page_id');
+    }
+
+    public function dataSource(): BelongsTo
+    {
+        return $this->belongsTo(AppDataSource::class, 'app_datasource_id');
+    }
+
+    public function action(): BelongsTo
+    {
+        return $this->belongsTo(AppAction::class, 'app_action_id');
     }
 }

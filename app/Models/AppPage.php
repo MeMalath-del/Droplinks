@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class AppPage extends Model
 {
@@ -31,5 +32,10 @@ class AppPage extends Model
     public function components(): HasMany
     {
         return $this->hasMany(AppComponent::class);
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(AppRole::class, 'app_page_role');
     }
 }

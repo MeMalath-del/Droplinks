@@ -57,6 +57,10 @@
                             <li>Versions: <strong>{{ $app->versions_count }}</strong></li>
                             <li>Latest version: <strong>{{ $latestVersion?->version ?? 'N/A' }}</strong></li>
                         </ul>
+                        <div class="builder-actions">
+                            <a href="{{ url('/apps/'.$app->slug) }}">Manage app</a>
+                            <a href="{{ url('/run/'.$app->slug) }}" class="hint">Run</a>
+                        </div>
                     </article>
                 @endforeach
             </div>

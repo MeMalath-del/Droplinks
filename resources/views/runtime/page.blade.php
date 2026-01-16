@@ -9,20 +9,34 @@
             </div>
         </header>
 
+        @if(session('action_result'))
+            <section class="builder-card">
+                <p class="hint">Action result: {{ session('action_result.status') }}</p>
+                @if(session('action_result.message'))
+                    <p class="hint">{{ session('action_result.message') }}</p>
+                @endif
+            </section>
+        @endif
+
         @if($components->isEmpty())
             <section class="builder-card">
                 <p class="hint">No components yet for this page.</p>
             </section>
         @else
-            <section class="builder-card">
-                <h2>Components</h2>
-                @foreach($components as $component)
-                    <article>
-                        <strong>{{ $component->component_type }}</strong>
-                        <p class="hint">{{ $component->name ?: 'Untitled component' }}</p>
-                    </article>
-                @endforeach
-            </section>
+            @foreach($components as $entry)
+                @php
+                    $component = $entry['component'];
+                    $data = $entry['data'];
+                    $formFields = $entry['formFields'] ?? null;
+                @endphp
+                @includeIf('runtime.components.'.$component->component_type, [
+                    'component' => $component,
+                    'data' => $data,
+                    'formFields' => $formFields,
+                    'app' => $app,
+                    'version' => $version,
+                ])
+            @endforeach
         @endif
     </div>
 @endsection

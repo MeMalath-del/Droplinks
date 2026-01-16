@@ -25,4 +25,9 @@ class AppEntity extends Model
     {
         return $this->hasMany(AppField::class);
     }
+
+    public function records(): HasMany
+    {
+        return $this->hasMany(AppRecord::class);
+    }
 }

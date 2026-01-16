@@ -21,9 +21,19 @@ class AppDefinition extends Model
         return $this->hasMany(AppVersion::class, 'app_id');
     }
 
+    public function roles(): HasMany
+    {
+        return $this->hasMany(AppRole::class, 'app_id');
+    }
+
     public function latestVersion(): ?AppVersion
     {
         return $this->versions()->latest('created_at')->first();
+    }
+
+    public function publishedVersion(): ?AppVersion
+    {
+        return $this->versions()->where('status', 'published')->latest('published_at')->first();
     }
 
     public function getRouteKeyName(): string

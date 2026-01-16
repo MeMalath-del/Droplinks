@@ -4,9 +4,9 @@ Low-code platform for building OutSystems-like apps using Laravel, Livewire, and
 
 ## Current status
 
-- Early dashboard for creating apps and managing versions.
-- Metadata data model for entities, pages, components, and data sources.
-- Initial runtime route to render built app pages.
+- Dashboard and per-app studio for versions, entities, pages, data sources, actions, workflows, roles, and records.
+- Metadata model with export/import support.
+- Runtime renderer for text, table, and form components.
 
 ## Local setup (no Node)
 
@@ -25,6 +25,8 @@ Low-code platform for building OutSystems-like apps using Laravel, Livewire, and
 ## Key routes
 
 - Dashboard: `GET /`
+- App studio: `GET /apps/{app:slug}`
+- Export metadata: `GET /apps/{app:slug}/export`
 - Runtime: `GET /run/{app:slug}/{page?}`
 
 ## Next steps

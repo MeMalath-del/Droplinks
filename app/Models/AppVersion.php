@@ -13,6 +13,12 @@ class AppVersion extends Model
         'version',
         'status',
         'notes',
+        'published_at',
+        'copied_from_version_id',
+    ];
+
+    protected $casts = [
+        'published_at' => 'datetime',
     ];
 
     public function app(): BelongsTo
@@ -43,5 +49,24 @@ class AppVersion extends Model
     public function workflows(): HasMany
     {
         return $this->hasMany(AppWorkflow::class);
+    }
+
+    public function publish(): void
+    {
+        $this->app->versions()
+            ->where('id', '!=', $this->id)
+            ->where('status', 'published')
+            ->update([
+                'status' => 'archived',
+            ]);
+
+        $this->forceFill([
+            'status' => 'published',
+            'published_at' => now(),
+        ])->save();
+
+        $this->app->update([
+            'status' => 'published',
+        ]);
     }
 }
